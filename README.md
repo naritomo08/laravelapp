@@ -62,3 +62,112 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## モジュール導入後に表示がおかしくなった場合の対応(例:breeze)
+
+導入コマンド(php/app/webコンテナのソースフォルダで実施)
+*必ず事前にコミットを取得しておくか、ブランチ分けしておくこと。
+
+```bash
+composer require laravel/breeze:1.10 --dev
+app php artisan breeze:install
+npm install
+npm run prod
+*npmについては稼働できるローカルで実施でもよい。
+```
+
+ログイン確認した際に画面がおかしくなった場合
+vite使用箇所の修正をする。
+
+以下のコマンドを入れる。
+
+```bash
+sudo rm -f backend/vite.config.js
+cd /backend/resource/views/layouts/
+sudo vi app.blade.php
+sudo vi guest.blade.php
+```
+
+書き換え内容
+
+変更前
+```bash
+        <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+```
+
+変更後
+```bash
+        <!-- Styles -->
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+        <!-- Scripts -->
+        <script src="{{ asset('js/app.js') }}" defer></script>
+```
+
+"npm run prod"を実施して、正常に画面表示されるか確認すること。
+
+## モジュール導入後のJS/CSSキャッシュ強制最新化
+
+上記の各種モジュールを入れて行えるようだったら対応する。
+
+* 以下のファイルを開く
+
+```bash
+sudo rm -f backend/vite.config.js
+cd /backend
+sudo vi webpack.mix.js
+```
+
+変更前
+```bash
+mix.js('resources/js/app.js', 'public/js')
+.postCss('resources/css/app.css', 'public/css', [
+    //
+]);
+```
+
+変更後
+mix.js('resources/js/app.js', 'public/js')
+.postCss('resources/css/app.css', 'public/css', [
+    require('postcss-import'),
+    require('tailwindcss'),
+    require('autoprefixer'),
+]);
+```
+
+
+* 以下のファイルを開く
+
+```bash
+sudo rm -f backend/vite.config.js
+cd /backend/resource/views/layouts/
+sudo vi app.blade.php
+sudo vi guest.blade.php
+```
+
+変更前
+```bash
+        <!-- Styles -->
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+        <!-- Scripts -->
+        <script src="{{ asset('js/app.js') }}" defer></script>
+```
+
+変更後
+```bash
+        <!-- Styles -->
+        <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+
+        <!-- Scripts -->
+        <script src="{{ mix('js/app.js') }}" defer></script>
+```
+
+* 以下のコマンドをコンテナ内かnpm稼働できるローカルで実施する。
+
+```bash
+npm run prod
+```
+
+画面が正常に開くことを確認する。7
