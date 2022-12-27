@@ -63,10 +63,13 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
-## モジュール導入後に表示がおかしくなった場合の対応(例:breeze)
+## モジュール導入後に表示がおかしくなった場合の対応(vite→mix切り替え対応)
+
+### 障害が発生する導入モジュール
 
 導入コマンド(php/app/webコンテナのソースフォルダで実施)
 *必ず事前にコミットを取得しておくか、ブランチ分けしておくこと。
+*本コマンド対応後にvite関連で画面がおかしくなったら対応すること。
 
 ```bash
 composer require laravel/breeze:1.10 --dev
@@ -76,8 +79,7 @@ npm run prod
 *npmについては稼働できるローカルで実施でもよい。
 ```
 
-ログイン確認した際に画面がおかしくなった場合
-vite使用箇所の修正をする。
+### 障害対応
 
 以下のコマンドを入れる。
 
@@ -96,7 +98,7 @@ sudo vi guest.blade.php
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 ```
 
-変更後
+変更後(assetについてはキャッシュ強制対応している場合mixにすること。)
 ```bash
         <!-- Styles -->
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
@@ -109,7 +111,7 @@ sudo vi guest.blade.php
 
 ## モジュール導入後のJS/CSSキャッシュ強制最新化
 
-上記の各種モジュールを入れて行えるようだったら対応する。
+上記のモジュール導入実施後、必要に応じ対応する。
 
 * 以下のファイルを開く
 
@@ -122,18 +124,19 @@ sudo vi webpack.mix.js
 変更前
 ```bash
 mix.js('resources/js/app.js', 'public/js')
-.postCss('resources/css/app.css', 'public/css', [
-    //
-]);
+    .postCss('resources/css/app.css', 'public/css', [
+        //
+    ]);
 ```
 
 変更後
+```bash
 mix.js('resources/js/app.js', 'public/js')
-.postCss('resources/css/app.css', 'public/css', [
-    require('postcss-import'),
-    require('tailwindcss'),
-    require('autoprefixer'),
-]);
+    .postCss('resources/css/app.css', 'public/css', [
+        require('postcss-import'),
+        require('tailwindcss'),
+        require('autoprefixer'),
+    ]);
 ```
 
 
@@ -170,4 +173,4 @@ sudo vi guest.blade.php
 npm run prod
 ```
 
-画面が正常に開くことを確認する。7
+画面が正常に開くことを確認する。
