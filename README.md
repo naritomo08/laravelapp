@@ -138,39 +138,4 @@ mix.js('resources/js/app.js', 'public/js')
         require('autoprefixer'),
     ]);
 ```
-
-
-* 以下のファイルを開く
-
-```bash
-sudo rm -f backend/vite.config.js
-cd /backend/resource/views/layouts/
-sudo vi app.blade.php
-sudo vi guest.blade.php
-```
-
-変更前
-```bash
-        <!-- Styles -->
-        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-
-        <!-- Scripts -->
-        <script src="{{ asset('js/app.js') }}" defer></script>
-```
-
-変更後
-```bash
-        <!-- Styles -->
-        <link rel="stylesheet" href="{{ mix('css/app.css') }}">
-
-        <!-- Scripts -->
-        <script src="{{ mix('js/app.js') }}" defer></script>
-```
-
-* 以下のコマンドをコンテナ内かnpm稼働できるローカルで実施する。
-
-```bash
-npm run prod
-```
-
-画面が正常に開くことを確認する。
+"npm run prod"を実施して、正常に画面表示されるか確認すること。
